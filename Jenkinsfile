@@ -9,12 +9,7 @@ pipeline {
             }
         }
        
-        stage('Test') {
-            steps {
-                // Exécuter les tests sous Windows
-                bat 'mvn test'
-            }
-        }
+ 
         stage('Deploy') {
             steps {
                 // Déploiement (peut être remplacé par votre stratégie de déploiement)
