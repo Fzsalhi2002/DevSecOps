@@ -10,52 +10,51 @@ pipeline {
         }
         stage('Build') {
             steps {
-                // Construire le projet Maven
-                sh 'mvn clean install'
+                // Construire le projet Maven sous Windows
+                bat 'mvn clean install'
             }
         }
         stage('Test') {
             steps {
-                // Exécuter les tests
-                sh 'mvn test'
+                // Exécuter les tests sous Windows
+                bat 'mvn test'
             }
         }
         stage('Deploy') {
             steps {
                 // Déploiement (peut être remplacé par votre stratégie de déploiement)
-                sh 'echo "Déploiement de l\'application..."'
+                bat 'echo "Déploiement de l\'application..."'
             }
         }
         stage('Secret Scanning') {
             steps {
-              bat 'gitleaks detect --source . --report-format json --report-path gitleaks-report.json'
-                    }
-                     }
+                // Scanner les secrets avec Gitleaks
+                bat 'gitleaks detect --source . --report-format json --report-path gitleaks-report.json'
+            }
+        }
         stage('Analyze Secrets Report') {
-
             steps {
-               script {
-                   def report = readFile('gitleaks-report.json')
-                   if (report.contains('leak')) {
-                       error 'Secrets détectés ! Le build est arrêté.'
+                script {
+                    // Vérifier si le rapport Gitleaks contient des secrets détectés
+                    def report = readFile('gitleaks-report.json')
+                    if (report.contains('leak')) {
+                        error 'Secrets détectés ! Le build est arrêté.'
                     }
-                    }
-                    }
-                    }
+                }
+            }
+        }
         stage('SCA with Dependency-Check') {
-steps {
-echo 'Analyse de la composition des sources avec OWASP Dependency-Check...'
-bat '"< --path vers denpendency check -->\\dependency-check-10.0.2-release\\
-dependency-check\\bin\\dependency-check.bat" --project "demo" --scan . --format HTML --out
-dependency-check-report.html --nvdApiKey 181c8fc5-2ddc-4d15-99bf-764fff8d50dc --disableAssembly'
-}
-}
-                    }
-         
+            steps {
+                echo 'Analyse de la composition des sources avec OWASP Dependency-Check...'
+                // Exécuter l'analyse de la composition avec Dependency-Check en utilisant le chemin correct
+                bat '"C:\\Users\\HP\\Downloads\\dependency-check-10.0.2-release\\dependency-check\\bin\\dependency-check.bat" --project "demo" --scan . --format HTML --out dependency-check-report.html --nvdApiKey 181c8fc5-2ddc-4d15-99bf-764fff8d50dc --disableAssembly'
+            }
+        }
+    }
 
     post {
         always {
-            // Archive les fichiers importants à la fin
+            // Archiver les fichiers importants à la fin
             archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
         }
         success {
