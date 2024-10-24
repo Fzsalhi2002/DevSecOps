@@ -8,12 +8,7 @@ pipeline {
                 git 'https://github.com/Fzsalhi2002/DevSecOps.git'
             }
         }
-        stage('Build') {
-            steps {
-                // Construire le projet Maven sous Windows
-                bat 'mvn clean install'
-            }
-        }
+       
         stage('Test') {
             steps {
                 // Exécuter les tests sous Windows
